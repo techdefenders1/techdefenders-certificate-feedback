@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feedback Form + Certificate</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f0f0;
+      text-align: center;
+      padding: 30px;
+    }
+    form {
+      background: #fff;
+      padding: 50px;
+      border-radius: 10px;
+      display: inline-block;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.15);
+      margin-bottom: 40px;
+      width: 500px;
+    }
+    input, textarea, button {
+      width: 95%;
+      margin: 12px 0;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #ffffff;
+      font-size: 18px;
+    }
+    button {
+      background: #007BFF;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 20px;
+      transition: background 0.3s;
+    }
+    button:hover { background: #0056b3; }
+
+    #certificateContainer {
+      display: none;
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    canvas {
+      border: 1px solid #ffffff;
+      border-radius: 8px;
+      max-width: 100%;
+      display: block;
+      margin: 0 auto;
+    }
+
+    #loadingMessage {
+      display: none;
+      font-size: 18px;
+      font-weight: 500;
+      color: #000000;
+      margin-top: 15px;
+    }
+
+    #downloadBtn {
+      display: none;
+      margin-top: 15px;
+    }
+
+    .header-logo {
+      width: 250px;
+      margin-bottom: 10px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .page-footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: #ffffff;
+      color: #000000;
+      font-size: 25px;
+      padding: 10px 0;
+      text-align: center;
+      box-shadow: 0 -2px 6px rgba(0,0,0,0.1);
+      z-index: 1000;
+    }
+    form {
+      background: #fffbfb;
+      padding: 50px;
+      border-radius: 10px;
+      display: inline-block;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.15);
+      margin-bottom: 40px;
+      width: 100%;
+      max-width: 500px;
+      box-sizing: border-box;
+    }
+
+    canvas {
+      border: 1px solid #ffffff;
+      border-radius: 8px;
+      width: 100%;
+      height: auto;
+      max-width: 794px;
+      display: block;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 15px;
+      }
+
+      form {
+        padding: 25px;
+      }
+
+      input, textarea, button {
+        font-size: 16px;
+      }
+
+      button {
+        font-size: 18px;
+      }
+
+      .header-logo {
+        width: 90px;
+        
+      }
+
+      .page-footer {
+        font-size: 16px;
+        position: relative;
+      }
+    }
+
+  </style>
+
+</head>
+<body>
+
+<img src="logos1.png" alt="Logo" class="header-logo">
+<h2>Feedback Form + Certificate</h2>
+
+<form id="feedbackForm">
+  <input type="text" id="name" placeholder="Enter your full name" required><br>
+  <input type="email" id="email" placeholder="Enter your email address" required><br>
+  <textarea id="feedback" placeholder="Write your feedback…" rows="4" required></textarea><br>
+  <button type="submit">Submit</button>
+</form>
+
+<div id="certificateContainer">
+  <h3>Your Certificate</h3>
+  <div id="loadingMessage">Generating your certificate… please wait ⏳</div>
+  <canvas id="certificateCanvas" width="1100" height="794"></canvas><br>
+  <button id="downloadBtn">Download Certificate (PDF)</button>
+</div>
+<footer class="page-footer">
+  Developed By:- TechDefenders(The Cyber Security Experts)
+</footer>
+
+<!-- Add jsPDF Library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+  const certificateBackground = "Certificate “Digital Safety Your First Line of Defense”.png"; 
+  const scriptURL ="https://script.google.com/macros/s/AKfycbwNhYBL2OY0PSnzYOKqDdMMeDNOB5p-DsEWup55bK3xz_CA5zzu_RbX1t8XPFUl1Q4z/exec"; 
+
+  const img = new Image();
+  img.src = certificateBackground;
+
+  const form = document.getElementById("feedbackForm");
+  const container = document.getElementById("certificateContainer");
+  const submitBtn = form.querySelector("button");
+  const canvas = document.getElementById("certificateCanvas");
+  const ctx = canvas.getContext("2d");
+  const downloadBtn = document.getElementById("downloadBtn");
+
+  const loadingMessage = document.createElement("p");
+  loadingMessage.textContent = "Generating your certificate… please wait ⏳";
+  loadingMessage.style.fontSize = "18px";
+  loadingMessage.style.fontWeight = "bold";
+  loadingMessage.style.marginTop = "10px";
+  loadingMessage.style.display = "none";
+  form.appendChild(loadingMessage);
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Submitting...";
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const feedback = document.getElementById("feedback").value.trim();
+
+    if (!name || !email || !feedback) {
+      alert("Please fill all fields.");
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Submit";
+      return;
+    }
+
+    loadingMessage.style.display = "block";
+
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("email", email);
+    formData.append("feedback", feedback);
+
+    const savePromise = fetch(scriptURL, {
+    method: "POST",
+    body: formData,
+    mode: "no-cors"
+    });
+
+
+    const imagePromise = img.complete
+      ? Promise.resolve()
+      : new Promise((res) => (img.onload = res));
+
+    await Promise.all([savePromise, imagePromise]);
+
+    form.style.display = "none";
+    container.style.display = "block";
+    loadingMessage.style.display = "none";
+
+    // Draw the certificate
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+    // Add Name
+    ctx.font = "bold 60px 'Great Vibes', cursive";
+    ctx.fillStyle = "#000";
+    ctx.textAlign = "center";
+    ctx.fillText(name, canvas.width / 2, 425);
+
+    // Add Date of Issue (bottom-right corner)
+    const today = new Date();
+    const dateString = today.toLocaleDateString('en-IN', {
+      day: '2-digit', month: 'long', year: 'numeric'
+    });
+    ctx.font = "22px Arial";
+    ctx.textAlign = "right";
+    ctx.fillStyle = "white";
+    ctx.fillText("Date of Issue : " + dateString, canvas.width/3, 785);
+
+    // Enable download button
+    downloadBtn.style.display = "inline-block";
+
+    downloadBtn.onclick = () => {
+    const { jsPDF } = window.jspdf;
+
+  // Create A4 PDF in portrait
+  const pdf = new jsPDF({
+    orientation: "landscape",
+    unit: "mm",
+    format: "a4"
+  });
+
+  // A4 portrait size in mm
+  const pageWidth = 297;
+  const pageHeight = 210;
+
+  // Convert canvas to image
+  const imgData = canvas.toDataURL("image/png");
+
+  // Add image scaled to full A4 page
+  pdf.addImage(imgData, "PNG", 0, 0, pageWidth, pageHeight);
+
+  pdf.save(`${name}_Certificate.pdf`);
+};
+  });
+</script>
+
+</body>
+</html>
