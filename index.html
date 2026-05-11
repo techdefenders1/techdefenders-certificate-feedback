@@ -233,7 +233,7 @@
     ctx.font = "bold 60px 'Great Vibes', cursive";
     ctx.fillStyle = "#000";
     ctx.textAlign = "center";
-    ctx.fillText(name, canvas.width / 2, 425);
+    ctx.fillText(name, canvas.width / 2, 400);
 
     // Add Date of Issue (bottom-right corner)
     const today = new Date();
@@ -242,7 +242,7 @@
     });
     ctx.font = "22px Arial";
     ctx.textAlign = "right";
-    ctx.fillStyle = "white";
+    ctx.fillStyle = "black";
     ctx.fillText("Date of Issue : " + dateString, canvas.width/3, 785);
 
     // Enable download button
