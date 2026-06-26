@@ -154,7 +154,7 @@
 <div id="certificateContainer">
   <h3>Your Certificate</h3>
   <div id="loadingMessage">Generating your certificate… please wait ⏳</div>
-  <canvas id="certificateCanvas" width="1100" height="794"></canvas><br>
+  <canvas id="certificateCanvas" width="794" height="1100"></canvas><br>
   <button id="downloadBtn">Download Certificate (PDF)</button>
 </div>
 <footer class="page-footer">
@@ -165,7 +165,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
-  const certificateBackground = "“Think Like a Pentester Hands-On VAPT for Beginners” Participation certificate.png"; 
+  const certificateBackground = "Think Like a Pentester   Hands-On VAPT for Beginners Participation certificate.png"; 
   const scriptURL ="https://script.google.com/macros/s/AKfycbzvaR--fLFefj-N4eaa6DEwHY8LGevWDheEPqlEhEm-vmWILvb8crg0NP9IAwmD8X5a/exec"; 
 
   const img = new Image();
@@ -233,7 +233,7 @@
     ctx.font = "bold 60px 'Great Vibes', cursive";
     ctx.fillStyle = "#000";
     ctx.textAlign = "center";
-    ctx.fillText(name, canvas.width / 2, 400);
+    ctx.fillText(name, canvas.width / 2, 470);
 
     // Add Date of Issue (bottom-right corner)
     const today = new Date();
@@ -241,9 +241,9 @@
       day: '2-digit', month: 'long', year: 'numeric'
     });
     ctx.font = "20px Arial";
-    ctx.textAlign = "right";
+    ctx.textAlign = "centre";
     ctx.fillStyle = "black";
-    ctx.fillText("Date of Issue : " + dateString, canvas.width/2, 785);
+    ctx.fillText("Date of Issue : " + dateString, canvas.width/2, 980);
 
     // Enable download button
     downloadBtn.style.display = "inline-block";
@@ -275,5 +275,4 @@
 
 </body>
 </html>
-
 
