@@ -165,7 +165,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
-  const certificateBackground = "“Windows Forensics Event Logs, Registry & Hidden Evidence”.png"; 
+  const certificateBackground = "“Think Like a Pentester Hands-On VAPT for Beginners” Participation certificate.png"; 
   const scriptURL ="https://script.google.com/macros/s/AKfycbzvaR--fLFefj-N4eaa6DEwHY8LGevWDheEPqlEhEm-vmWILvb8crg0NP9IAwmD8X5a/exec"; 
 
   const img = new Image();
@@ -243,7 +243,7 @@
     ctx.font = "20px Arial";
     ctx.textAlign = "right";
     ctx.fillStyle = "black";
-    ctx.fillText("Date of Issue : " + dateString, canvas.width/3, 785);
+    ctx.fillText("Date of Issue : " + dateString, canvas.width/2, 785);
 
     // Enable download button
     downloadBtn.style.display = "inline-block";
@@ -253,14 +253,14 @@
 
   // Create A4 PDF in portrait
   const pdf = new jsPDF({
-    orientation: "landscape",
+    orientation: "portrait",
     unit: "mm",
     format: "a4"
   });
 
   // A4 portrait size in mm
-  const pageWidth = 297;
-  const pageHeight = 210;
+  const pageWidth = 210;
+  const pageHeight = 297;
 
   // Convert canvas to image
   const imgData = canvas.toDataURL("image/png");
