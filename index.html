@@ -168,6 +168,23 @@
   const certificateBackground = "Participation certificate.png"; 
   const scriptURL ="https://script.google.com/macros/s/AKfycbzvaR--fLFefj-N4eaa6DEwHY8LGevWDheEPqlEhEm-vmWILvb8crg0NP9IAwmD8X5a/exec"; 
 
+  /* ==========================================
+   CERTIFICATE PORTAL SETTINGS
+   CHANGE ONLY THIS DATE & TIME
+  ========================================== */
+
+  const START_TIME = new Date("2026-07-01T20:30:00");
+
+  // Active Duration (Hours)
+  const ACTIVE_HOURS = 12;
+
+  const END_TIME = new Date(
+    START_TIME.getTime() +
+    ACTIVE_HOURS * 60 * 60 * 1000
+  );
+
+
+
   const img = new Image();
   img.src = certificateBackground;
 
@@ -178,6 +195,91 @@
   const ctx = canvas.getContext("2d");
   const downloadBtn = document.getElementById("downloadBtn");
 
+  const statusBox = document.createElement("div");
+
+  statusBox.style.maxWidth = "700px";
+  statusBox.style.margin = "20px auto";
+  statusBox.style.padding = "20px";
+  statusBox.style.background = "#fff";
+  statusBox.style.borderRadius = "10px";
+  statusBox.style.boxShadow = "0 3px 12px rgba(0,0,0,.15)";
+
+  document.body.insertBefore(statusBox, form);
+
+  function getCountdown(ms){
+
+    let days=Math.floor(ms/86400000);
+
+    let hours=Math.floor((ms%86400000)/3600000);
+
+    let minutes=Math.floor((ms%3600000)/60000);
+
+    let seconds=Math.floor((ms%60000)/1000);
+
+    return `${days} Days ${hours} Hours ${minutes} Minutes ${seconds} Seconds`;
+
+  }
+
+  function getCountdown(ms) {
+  let days = Math.floor(ms / 86400000);
+  let hours = Math.floor((ms % 86400000) / 3600000);
+  let minutes = Math.floor((ms % 3600000) / 60000);
+  let seconds = Math.floor((ms % 60000) / 1000);
+
+  return `${days} Days ${hours} Hours ${minutes} Minutes ${seconds} Seconds`;
+}
+
+  function updatePortalStatus() {
+    const now = new Date();
+
+    // BEFORE START
+    if (now < START_TIME) {
+      form.style.display = "none";
+      container.style.display = "none";
+
+      statusBox.innerHTML = `
+        <h2 style="color:#0d6efd;">Certificate Distribution</h2>
+        <p><b>Certificate distribution has not started yet.</b></p>
+        <p>
+          Starts On<br><br>
+          <b>${START_TIME.toLocaleString('en-IN')}</b>
+        </p>
+        <h3>Starts In</h3>
+        <h2 style="color:#d9534f;">${getCountdown(START_TIME - now)}</h2>
+      `;
+      return;
+    }
+
+    // ACTIVE
+    if (now >= START_TIME && now <= END_TIME) {
+      if (container.style.display !== "block") {
+      form.style.display = "inline-block";
+    }
+
+      statusBox.innerHTML = `
+        <h2 style="color:green;">Certificate Portal is Open</h2>
+        <p>Please submit your Feedback & Download Certificate before the portal closes.</p>
+        <h3>Time Remaining</h3>
+        <h2 style="color:#d9534f;">${getCountdown(END_TIME - now)}</h2>
+      `;
+      return;
+    }
+
+    // EXPIRED
+    form.style.display = "none";
+    container.style.display = "none";
+
+    statusBox.innerHTML = `
+      <h2 style="color:red;">Certificate Distribution Closed</h2>
+      <p>This certificate distribution window has expired.</p>
+      <hr>
+      <h3>Under Maintenance</h3>
+      <p>The certificate portal is currently under maintenance.</p>
+      <p>We are not issuing certificates at this time.</p>
+    `;
+  }
+
+
   const loadingMessage = document.createElement("p");
   loadingMessage.textContent = "Generating your certificate… please wait ⏳";
   loadingMessage.style.fontSize = "18px";
@@ -185,6 +287,9 @@
   loadingMessage.style.marginTop = "10px";
   loadingMessage.style.display = "none";
   form.appendChild(loadingMessage);
+
+  updatePortalStatus();
+  setInterval(updatePortalStatus,1000);
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -221,8 +326,15 @@
 
     await Promise.all([savePromise, imagePromise]);
 
+    // Hide countdown/status
+    statusBox.style.display = "none";
+
+    // Hide form
     form.style.display = "none";
+
+    // Show certificate
     container.style.display = "block";
+
     loadingMessage.style.display = "none";
 
     // Draw the certificate
@@ -275,3 +387,4 @@
 
 </body>
 </html>
+
